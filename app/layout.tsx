@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Free Image Background Remover - Remove BG Online No Watermark",
-  description: "Free online image background remover. Remove background from any image, get transparent PNG. 100% free, no watermark, no sign up required.",
-  keywords: "free image background remover, remove bg from image, transparent png, no watermark, remove background online, free background remover",
+  title: "免费图片背景移除 - 在线一键去背景 无水印",
+  description: "免费在线图片背景移除工具，一键去除图片背景，导出透明PNG。100%免费，无水印，无需注册登录。",
+  keywords: "免费去背景,图片背景移除,抠图,在线抠图,去除背景,透明png,无水印,免费抠图",
   openGraph: {
-    title: "Free Image Background Remover - Remove BG Online No Watermark",
-    description: "Free online image background remover. Remove background from any image, get transparent PNG. 100% free, no watermark, no sign up required.",
+    title: "免费图片背景移除 - 在线一键去背景 无水印",
+    description: "免费在线图片背景移除工具，一键去除图片背景，导出透明PNG。100%免费，无水印，无需注册登录。",
     type: "website",
   },
 };

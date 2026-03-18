@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/jpg'];
@@ -19,12 +19,12 @@ export default function Home() {
     setProgress(0);
 
     if (!ALLOWED_TYPES.includes(file.type)) {
-      setError('Only JPG and PNG files are allowed');
+      setError('只允许 JPG 和 PNG 格式图片');
       return;
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      setError('File size must be less than 5MB for free users');
+      setError('免费用户图片大小不能超过 5MB');
       return;
     }
 
@@ -97,7 +97,7 @@ export default function Home() {
 
       if (!apiResponse.ok) {
         const data = await apiResponse.json();
-        throw new Error(data.error || 'Failed to process image');
+        throw new Error(data.error || '图片处理失败');
       }
 
       const processedBlob = await apiResponse.blob();
@@ -115,7 +115,7 @@ export default function Home() {
     if (!processedImage) return;
     const a = document.createElement('a');
     a.href = processedImage;
-    a.download = 'background-removed.png';
+    a.download = '背景已移除.png';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -137,10 +137,10 @@ export default function Home() {
       <header className="border-b">
         <div className="container mx-auto px-4 py-6">
           <h1 className="text-3xl md:text-4xl font-bold text-center">
-            Free Image Background Remover
+            免费图片背景移除工具
           </h1>
           <p className="text-center mt-2 text-gray-600 dark:text-gray-300">
-            Remove background from any image online • 100% free • No watermark • No sign up required
+            在线一键去除图片背景 • 100%免费 • 无水印 • 无需注册登录
           </p>
         </div>
       </header>
@@ -170,13 +170,13 @@ export default function Home() {
             />
             <div className="text-6xl mb-4">🖼️</div>
             <h2 className="text-xl md:text-2xl font-semibold mb-2">
-              Click or drag and drop your image here
+              点击或拖拽图片到这里
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mb-2">
-              Or press Ctrl+V to paste from clipboard
+              或者按 Ctrl+V 直接粘贴截图
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-500">
-              JPG or PNG • Max 5MB • Free • No watermark
+              支持 JPG / PNG • 最大 5MB • 免费 • 无水印
             </p>
           </div>
         )}
@@ -186,16 +186,16 @@ export default function Home() {
           <div className="space-y-6">
             <div className="grid md:grid-cols-1 gap-6">
               <div>
-                <h3 className="text-lg font-medium mb-3">Original Image</h3>
+                <h3 className="text-lg font-medium mb-3">原始图片</h3>
                 <div className="rounded-lg overflow-hidden shadow-md inline-block">
-                  <img src={originalImage} alt="Original" className="max-w-full h-auto max-h-[400px]" />
+                  <img src={originalImage} alt="原始图片" className="max-w-full h-auto max-h-[400px]" />
                 </div>
               </div>
             </div>
 
             {isProcessing && (
               <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6">
-                <p className="mb-3 text-blue-800 dark:text-blue-200">Processing your image...</p>
+                <p className="mb-3 text-blue-800 dark:text-blue-200">正在处理你的图片...</p>
                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
                   <div
                     className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
@@ -211,14 +211,14 @@ export default function Home() {
                 disabled={isProcessing}
                 className="px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold rounded-lg transition-colors"
               >
-                {isProcessing ? 'Processing...' : 'Remove Background'}
+                {isProcessing ? '处理中...' : '移除背景'}
               </button>
               <button
                 onClick={resetAll}
                 disabled={isProcessing}
                 className="px-8 py-3 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 font-semibold rounded-lg transition-colors"
               >
-                Upload New Image
+                重新上传
               </button>
             </div>
           </div>
@@ -229,17 +229,17 @@ export default function Home() {
           <div className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-medium mb-3">Original</h3>
+                <h3 className="text-lg font-medium mb-3">原始图片</h3>
                 <div className="rounded-lg overflow-hidden shadow-md">
-                  <img src={originalImage!} alt="Original" className="max-w-full h-auto" />
+                  <img src={originalImage!} alt="原始图片" className="max-w-full h-auto" />
                 </div>
               </div>
               <div>
-                <h3 className="text-lg font-medium mb-3">Result (Transparent Background)</h3>
+                <h3 className="text-lg font-medium mb-3">处理结果（透明背景）</h3>
                 <div className="rounded-lg overflow-hidden shadow-md checkerboard p-4 inline-block">
                   <img
                     src={processedImage}
-                    alt="Processed"
+                    alt="处理结果"
                     className="max-w-full h-auto"
                     style={{ maxHeight: '400px' }}
                   />
@@ -252,13 +252,13 @@ export default function Home() {
                 onClick={downloadImage}
                 className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
               >
-                Download PNG
+                下载 PNG
               </button>
               <button
                 onClick={resetAll}
                 className="px-8 py-3 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 font-semibold rounded-lg transition-colors"
               >
-                Process Another Image
+                处理另一张图片
               </button>
             </div>
           </div>
@@ -267,50 +267,47 @@ export default function Home() {
         {/* SEO Content */}
         <div className="mt-16 prose dark:prose-invert max-w-none">
           <h2 className="text-2xl font-bold mb-4">
-            Free Online Background Remover – Get Transparent PNG Instantly
+            免费在线图片去背景 — 一键获取透明PNG
           </h2>
           <p>
-            Our free background remover tool lets you remove the background from any image quickly and easily.
-            No software to install, no sign up required, and absolutely no watermarks on your output.
-            Whether you're a photographer, e-commerce seller, or just need to edit a photo for social media,
-            our tool gives you professional-quality results in seconds.
+            我们的免费背景移除工具让你快速轻松地去除任何图片的背景。无需安装软件，无需注册账号，处理结果完全不带水印。
+            无论你是摄影师、电商卖家，还是需要编辑社交媒体照片，我们的工具都能在几秒钟内给你专业级的处理结果。
           </p>
           
-          <h3 className="text-xl font-semibold mt-8 mb-3">Features</h3>
+          <h3 className="text-xl font-semibold mt-8 mb-3">功能特点</h3>
           <ul>
-            <li><strong>100% Free:</strong> Remove background from images for free, no hidden fees</li>
-            <li><strong>No Watermark:</strong> Unlike other free tools, we don't add any watermarks to your images</li>
-            <li><strong>No Sign Up:</strong> Start removing backgrounds right away, no account needed</li>
-            <li><strong>High Quality:</strong> Powered by Remove.bg AI technology for accurate edge detection</li>
-            <li><strong>Transparent PNG:</strong> Get a clean transparent background ready to use anywhere</li>
-            <li><strong>Works Everywhere:</strong> Mobile friendly, works on any device – phone, tablet, or computer</li>
+            <li><strong>100% 免费：</strong>免费去除图片背景，无隐藏费用</li>
+            <li><strong>无水印：</strong>和其他免费工具不同，我们不会在你的图片上添加水印</li>
+            <li><strong>无需注册：</strong>立即开始使用，不需要创建账号</li>
+            <li><strong>高质量：</strong>采用 Remove.bg AI 技术，边缘检测精准</li>
+            <li><strong>透明PNG：</strong>输出干净透明背景，可以直接用于任何场景</li>
+            <li><strong>全设备兼容：</strong>支持移动端，手机、平板、电脑都能使用</li>
           </ul>
 
           <h3 className="text-xl font-semibold mt-8 mb-3">
-            How to Remove Background from Image for Free
+            如何免费去除图片背景
           </h3>
           <ol>
-            <li>Upload your image by clicking, dragging, or pasting from clipboard</li>
-            <li>Click the "Remove Background" button</li>
-            <li>Wait a few seconds for AI processing</li>
-            <li>Download your new transparent PNG image</li>
+            <li>通过点击、拖拽或粘贴上传你的图片</li>
+            <li>点击"移除背景"按钮</li>
+            <li>等待几秒让AI处理完成</li>
+            <li>下载处理好的透明PNG图片</li>
           </ol>
 
           <p>
-            Perfect for product photos for your online store, profile pictures, portraits, graphic design projects,
-            and more. Get a clean transparent background that you can use anywhere.
+            完美适用于网店商品图片、头像照片、肖像、平面设计项目等。获取干净透明的背景，随时随地随心使用。
           </p>
         </div>
 
         {/* Footer */}
         <footer className="mt-16 pt-8 border-t text-center text-gray-500 text-sm">
           <p>
-            © {new Date().getFullYear()} Free Image Background Remover • Free online tool • Built with Next.js and Cloudflare
+            © {new Date().getFullYear()} 免费图片背景移除工具 • 在线免费工具 • 使用 Next.js + Cloudflare 构建
           </p>
           <div className="mt-2 flex justify-center gap-4">
-            <a href="/about" className="hover:underline">About</a>
-            <a href="/privacy" className="hover:underline">Privacy Policy</a>
-            <a href="/pricing" className="hover:underline">Pricing</a>
+            <a href="/about" className="hover:underline">关于我们</a>
+            <a href="/privacy" className="hover:underline">隐私政策</a>
+            <a href="/pricing" className="hover:underline">价格套餐</a>
           </div>
         </footer>
       </main>

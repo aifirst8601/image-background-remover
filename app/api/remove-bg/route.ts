@@ -31,14 +31,14 @@ export async function POST(request: NextRequest) {
   const entry = rateLimit.get(cacheKey);
   if (entry && entry.count >= DAILY_LIMIT_PER_IP && entry.date === today) {
     return NextResponse.json(
-      { error: 'Daily limit reached. Each IP can process up to 3 images per day. Please come back tomorrow.' },
+      { error: '已达到每日限额。每个IP每天最多处理3张图片，请明天再来。' },
       { status: 429 }
     );
   }
 
   if (!REMOVE_BG_API_KEY) {
     return NextResponse.json(
-      { error: 'Remove.bg API key not configured. Please set REMOVE_BG_API_KEY environment variable.' },
+      { error: 'Remove.bg API 密钥未配置，请设置 REMOVE_BG_API_KEY 环境变量。' },
       { status: 500 }
     );
   }
@@ -48,12 +48,12 @@ export async function POST(request: NextRequest) {
     const image = formData.get('image') as File;
     
     if (!image) {
-      return NextResponse.json({ error: 'No image provided' }, { status: 400 });
+      return NextResponse.json({ error: '未提供图片' }, { status: 400 });
     }
 
     // Check file size
     if (image.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File size exceeds 5MB limit' }, { status: 400 });
+      return NextResponse.json({ error: '文件大小超过 5MB 限制' }, { status: 400 });
     }
 
     // Increment rate limit counter
