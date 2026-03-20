@@ -78,8 +78,19 @@ export async function POST(request: NextRequest) {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ errors: [{ message: 'Unknown error' }] }));
-      const errorMessage = errorData.errors?.[0]?.message || `API error: ${response.status}`;
+      let errorMessage = `API error: ${response.status}`;
+      try {
+        const responseText = await response.text();
+        console.log(`[Remove.bg API error] status=${response.status}, response=${responseText}`);
+        try {
+          const errorData = JSON.parse(responseText);
+          errorMessage = errorData.errors?.[0]?.message || `API error: ${response.status}`;
+        } catch {
+          errorMessage = responseText || `API error: ${response.status}`;
+        }
+      } catch (e) {
+        console.error('[Remove.bg API] Failed to read error response', e);
+      }
       return NextResponse.json({ error: errorMessage }, { status: response.status });
     }
 
