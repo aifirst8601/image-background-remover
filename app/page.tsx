@@ -88,8 +88,11 @@ export default function Home() {
 
       setProgress(30);
 
-      const apiResponse = await fetch('/api/remove-bg', {
+      const apiResponse = await fetch('https://api.remove.bg/v1.0/removebg', {
         method: 'POST',
+        headers: {
+          'X-Api-Key': 'qi8Myumefx2z4tGFSJhwKcNP',
+        },
         body: formData,
       });
 

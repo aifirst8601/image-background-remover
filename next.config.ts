@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* Config options for Cloudflare Pages */
-  output: "standalone",
+  output: "export",  // 改为静态导出
   distDir: "out",
   eslint: {
     // 忽略构建时的 ESLint 检查警告/错误，不影响运行
