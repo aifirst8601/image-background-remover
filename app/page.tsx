@@ -84,7 +84,8 @@ export default function Home() {
       const file = new File([blob], 'image.' + blob.type.split('/')[1], { type: blob.type });
 
       const formData = new FormData();
-      formData.append('image', file);
+      formData.append('image_file', file);
+      formData.append('size', 'preview');  // 免费版用 preview 大小
 
       setProgress(30);
 
