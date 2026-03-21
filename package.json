@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && rm -f out/cache/webpack/server-production/0.pack",
+    "build": "next build && rm -f cache/webpack/server-production/0.pack",
     "start": "next start",
     "lint": "next lint"
   },
