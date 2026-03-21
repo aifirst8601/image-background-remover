@@ -18,6 +18,13 @@ const nextConfig: NextConfig = {
       "**/out/cache/**/*",
     ],
   },
+  // 禁用 webpack 缓存生成，避免 25.3MB 文件
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.cache = false;
+    }
+    return config;
+  },
 };
 
 export default nextConfig;
