@@ -88,7 +88,7 @@ export default function Home() {
 
       setProgress(30);
 
-      const apiResponse = await fetch('/api/remove-bg', {
+      const apiResponse = await fetch('/bgremover/api/remove-bg', {
         method: 'POST',
         body: formData,
       });
@@ -305,9 +305,9 @@ export default function Home() {
             © {new Date().getFullYear()} 免费图片背景移除工具 • 在线免费工具 • 使用 Next.js + Cloudflare 构建
           </p>
           <div className="mt-2 flex justify-center gap-4">
-            <a href="/about" className="hover:underline">关于我们</a>
-            <a href="/privacy" className="hover:underline">隐私政策</a>
-            <a href="/pricing" className="hover:underline">价格套餐</a>
+            <a href="/bgremover/about" className="hover:underline">关于我们</a>
+            <a href="/bgremover/privacy" className="hover:underline">隐私政策</a>
+            <a href="/bgremover/pricing" className="hover:underline">价格套餐</a>
           </div>
         </footer>
       </main>

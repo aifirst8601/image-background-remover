@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
     // Call Remove.bg API
     const removeBgForm = new FormData();
     removeBgForm.append('image_file', image);
-    removeBgForm.append('size', 'auto');
+    removeBgForm.append('size', 'full');
 
     const response = await fetch('https://api.remove.bg/v1.0/removebg', {
       method: 'POST',
