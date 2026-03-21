@@ -88,7 +88,7 @@ export default function Home() {
 
       setProgress(30);
 
-      const apiResponse = await fetch('/bgremover/api/remove-bg', {
+      const apiResponse = await fetch('/api/remove-bg', {
         method: 'POST',
         body: formData,
       });

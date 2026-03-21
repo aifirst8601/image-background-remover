@@ -8,7 +8,8 @@ const nextConfig: NextConfig = {
     // 忽略构建时的 ESLint 检查警告/错误，不影响运行
     ignoreDuringBuilds: true,
   },
-  basePath: "/bgremover",
+  // 注释掉 basePath，让 Cloudflare Pages 在根目录工作
+  // basePath: "/bgremover",
   // 排除大的二进制文件减小构建输出大小
   outputFileTracingExcludes: {
     "**/*": [
