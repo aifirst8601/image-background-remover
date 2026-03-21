@@ -84,16 +84,12 @@ export default function Home() {
       const file = new File([blob], 'image.' + blob.type.split('/')[1], { type: blob.type });
 
       const formData = new FormData();
-      formData.append('image_file', file);
-      formData.append('size', 'preview');  // 免费版只能用 preview 尺寸
+      formData.append('image', file);  // Local API expects 'image' field
 
       setProgress(30);
 
-      const apiResponse = await fetch('https://api.remove.bg/v1.0/removebg', {
+      const apiResponse = await fetch('/api/remove-bg', {
         method: 'POST',
-        headers: {
-          'X-Api-Key': 'qi8Myumefx2z4tGFSJhwKcNP',
-        },
         body: formData,
       });
 
@@ -248,9 +244,6 @@ export default function Home() {
                     style={{ maxHeight: '400px' }}
                   />
                 </div>
-                <p className="text-sm text-gray-500 mt-2">
-                  ⚠️ 免费版输出为预览尺寸。如需原图尺寸，请使用付费API密钥。
-                </p>
               </div>
             </div>
 

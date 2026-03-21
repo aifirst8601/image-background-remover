@@ -1,29 +1,17 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* Config options for Cloudflare Pages */
-  output: "export",  // 改为静态导出
-  distDir: "out",
+  /* Config options for Local Development Server */
+  // No output: "export" - using dynamic server
+  distDir: ".next",
   eslint: {
-    // 忽略构建时的 ESLint 检查警告/错误，不影响运行
     ignoreDuringBuilds: true,
   },
-  // 注释掉 basePath，让 Cloudflare Pages 在根目录工作
+  // Enable basePath for local deployment if needed
   // basePath: "/bgremover",
-  // 排除大的二进制文件减小构建输出大小
-  outputFileTracingExcludes: {
-    "**/*": [
-      "**/node_modules/@swc/core-linux-x64-gnu",
-      "**/node_modules/@swc/core-linux-x64-musl",
-      "**/node_modules/esbuild/linux",
-      "**/out/cache/**/*",
-    ],
-  },
-  // 禁用 webpack 缓存生成，避免 25.3MB 文件
+  // Local server can use cache for faster builds
   webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.cache = false;
-    }
+    // Local builds can use cache
     return config;
   },
 };
