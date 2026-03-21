@@ -9,15 +9,13 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   basePath: "/bgremover",
-  // 禁用 build cache 输出到 dist 避免大文件
-  experimental: {
-    outputFileTracingExcludes: {
-      "**/*": [
-        "**/node_modules/@swc/core-linux-x64-gnu",
-        "**/node_modules/@swc/core-linux-x64-musl",
-        "**/node_modules/esbuild/linux",
-      ],
-    },
+  // 排除大的二进制文件减小构建输出大小
+  outputFileTracingExcludes: {
+    "**/*": [
+      "**/node_modules/@swc/core-linux-x64-gnu",
+      "**/node_modules/@swc/core-linux-x64-musl",
+      "**/node_modules/esbuild/linux",
+    ],
   },
 };
 
