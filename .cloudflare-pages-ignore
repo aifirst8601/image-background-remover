@@ -3,4 +3,4 @@ node_modules
 .github
 .vscode
 *.md
-out/cache
+out/cache/**/*
