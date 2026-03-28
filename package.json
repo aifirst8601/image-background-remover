@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && rm -rf .next/cache",
+    "build": "next build",
+    "postbuild": "node -e \"const fs=require('fs');const p=require('path');const d=p.join('.next','cache');if(fs.existsSync(d)){fs.rmSync(d,{recursive:true,force:true});console.log('cache deleted');}\"",
     "pages:build": "npx @cloudflare/next-on-pages",
     "start": "next start",
     "lint": "next lint"

@@ -1,61 +1,39 @@
-import type { NextConfig } from "next";
-import fs from 'fs';
-import path from 'path';
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   images: {
-    unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'replicate.delivery',
+      },
+    ],
   },
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // 实验性配置：禁用所有缓存
-  experimental: {
-    webpackBuildWorker: false,
-    optimizeCss: false,
-  },
-  // Webpack 配置
+  // 禁用 webpack 缓存
   webpack: (config, { isServer }) => {
-    // 完全禁用缓存
-    config.cache = false;
-    
-    // 如果是服务器端构建，不包含大型依赖
     if (isServer) {
-      config.externals = [
-        ...(config.externals || []),
-        '@swc/core-linux-x64-gnu',
-        '@swc/core-linux-x64-musl', 
-        'esbuild',
-        'sharp',
-        'workerd'
-      ];
+      config.cache = false;
     }
-    
     return config;
-  },
-  // 排除大型文件
-  outputFileTracingExcludes: {
-    "**/*": [
-      "**/node_modules/@swc/**",
-      "**/node_modules/esbuild/**",
-      "**/node_modules/workerd/**",
-      "**/node_modules/sharp/**",
-    ],
   },
 };
 
-// 构建后删除缓存
-function postbuild() {
+// postbuild 函数 - 在构建完成后删除 cache 目录
+// 这个函数会在 next build 完成后自动被调用
+if (require.main === module || process.env.NEXT_POSTBUILD) {
+  const fs = require('fs');
+  const path = require('path');
   const cacheDir = path.join(process.cwd(), '.next', 'cache');
   if (fs.existsSync(cacheDir)) {
     try {
       fs.rmSync(cacheDir, { recursive: true, force: true });
-      console.log('✓ Deleted .next/cache to reduce output size');
+      console.log('✓ Deleted .next/cache directory');
     } catch (e) {
-      console.warn('Failed to delete cache:', e);
+      console.warn('Warning: Failed to delete cache:', e.message);
     }
   }
 }
 
-// 导出 postbuild 函数
-module.exports = Object.assign(nextConfig, { postbuild });
+module.exports = nextConfig;
