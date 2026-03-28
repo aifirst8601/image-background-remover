@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "NEXT_DISABLE_CACHE=1 npx next build",
+    "build": "npx next build",
+    "postbuild": "node -e \"const fs=require('fs');const p='.next/cache';if(fs.existsSync(p)){console.log('Deleting cache...');fs.rmSync(p,{recursive:true,force:true});console.log('Done');}\"",
     "pages:build": "npx @cloudflare/next-on-pages",
     "start": "next start",
     "lint": "next lint"
