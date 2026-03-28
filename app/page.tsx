@@ -394,7 +394,7 @@ export default function Home() {
           </h3>
           <ol>
             <li>通过点击、拖拽或粘贴上传你的图片</li>
-            <li>点击"移除背景"按钮</li>
+            <li>点击&quot;移除背景&quot;按钮</li>
             <li>等待几秒让AI处理完成</li>
             <li>下载处理好的透明PNG图片</li>
           </ol>
