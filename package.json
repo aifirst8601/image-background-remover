@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npx next build && rm -rf .next/cache",
+    "build": "NEXT_DISABLE_CACHE=1 npx next build",
     "pages:build": "npx @cloudflare/next-on-pages",
     "start": "next start",
     "lint": "next lint"
