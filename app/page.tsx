@@ -1,30 +1,103 @@
 'use client';
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { LoginButton } from '@/components/LoginButton';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE_LOGGED_IN = 25 * 1024 * 1024; // 25MB for logged in users
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/jpg'];
 
+// 每日免费额度
+const DAILY_LIMIT_GUEST = 3;
+const DAILY_LIMIT_LOGGED_IN = 10;
+
 export default function Home() {
+  const { data: session } = useSession();
   const [originalImage, setOriginalImage] = useState<string | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [dailyUsage, setDailyUsage] = useState<{ used: number; limit: number }>({ used: 0, limit: DAILY_LIMIT_GUEST });
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 检查每日额度
+  const checkDailyLimit = useCallback(async () => {
+    if (session?.user?.id) {
+      try {
+        const res = await fetch('/api/usage');
+        if (res.ok) {
+          const data = await res.json() as { used: number; limit: number };
+          setDailyUsage({ used: data.used, limit: DAILY_LIMIT_LOGGED_IN });
+        }
+      } catch (e) {
+        console.error('Failed to fetch usage:', e);
+      }
+    } else {
+      // 未登录用户使用本地存储
+      const today = new Date().toISOString().split('T')[0];
+      const stored = localStorage.getItem(`daily_usage_${today}`);
+      const used = stored ? parseInt(stored, 10) : 0;
+      setDailyUsage({ used, limit: DAILY_LIMIT_GUEST });
+    }
+  }, [session]);
+
+  // 记录使用次数
+  const recordUsage = useCallback(async () => {
+    const today = new Date().toISOString().split('T')[0];
+    
+    if (session?.user?.id) {
+      // 登录用户：发送到服务器
+      try {
+        await fetch('/api/usage', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ date: today }),
+        });
+      } catch (e) {
+        console.error('Failed to record usage:', e);
+      }
+    } else {
+      // 未登录用户：使用本地存储
+      const today = new Date().toISOString().split('T')[0];
+      const stored = localStorage.getItem(`daily_usage_${today}`);
+      const current = stored ? parseInt(stored, 10) : 0;
+      localStorage.setItem(`daily_usage_${today}`, String(current + 1));
+    }
+    
+    // 更新本地状态
+    setDailyUsage(prev => ({ ...prev, used: prev.used + 1 }));
+  }, [session]);
+
+  useEffect(() => {
+    checkDailyLimit();
+  }, [checkDailyLimit]);
+
+  // 检查是否超过额度
+  const isOverLimit = dailyUsage.used >= dailyUsage.limit;
+  const currentMaxSize = session?.user ? MAX_FILE_SIZE_LOGGED_IN : MAX_FILE_SIZE;
 
   const handleFile = useCallback((file: File) => {
     setError(null);
     setProcessedImage(null);
     setProgress(0);
 
+    // 检查额度
+    if (isOverLimit) {
+      setError(`今日免费额度已用完（${dailyUsage.limit}张）。请明天再来，或登录获取更多额度（每天${DAILY_LIMIT_LOGGED_IN}张）`);
+      return;
+    }
+
     if (!ALLOWED_TYPES.includes(file.type)) {
       setError('只允许 JPG 和 PNG 格式图片');
       return;
     }
 
-    if (file.size > MAX_FILE_SIZE) {
-      setError('免费用户图片大小不能超过 5MB');
+    if (file.size > currentMaxSize) {
+      setError(session?.user 
+        ? `图片大小不能超过 ${Math.round(currentMaxSize / 1024 / 1024)}MB` 
+        : '免费用户图片大小不能超过 5MB，登录后可提升到 25MB');
       return;
     }
 
@@ -33,7 +106,7 @@ export default function Home() {
       setOriginalImage(e.target?.result as string);
     };
     reader.readAsDataURL(file);
-  }, []);
+  }, [isOverLimit, dailyUsage.limit, currentMaxSize, session]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -72,6 +145,12 @@ export default function Home() {
 
   const removeBackground = async () => {
     if (!originalImage) return;
+    
+    // 检查额度
+    if (isOverLimit) {
+      setError(`今日免费额度已用完（${dailyUsage.limit}张）。请明天再来，或登录获取更多额度（每天${DAILY_LIMIT_LOGGED_IN}张）`);
+      return;
+    }
 
     setIsProcessing(true);
     setError(null);
@@ -100,7 +179,7 @@ export default function Home() {
       setProgress(70);
 
       if (!apiResponse.ok) {
-        const data = await apiResponse.json();
+        const data = await apiResponse.json() as { error?: string };
         throw new Error(data.error || '图片处理失败');
       }
 
@@ -108,6 +187,9 @@ export default function Home() {
       const processedUrl = URL.createObjectURL(processedBlob);
       setProcessedImage(processedUrl);
       setProgress(100);
+      
+      // 记录使用次数
+      recordUsage();
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -140,12 +222,28 @@ export default function Home() {
       {/* Header */}
       <header className="border-b">
         <div className="container mx-auto px-4 py-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-center">
-            免费图片背景移除工具
-          </h1>
-          <p className="text-center mt-2 text-gray-600 dark:text-gray-300">
-            在线一键去除图片背景 • 100%免费 • 无水印 • 无需注册登录
-          </p>
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="text-center sm:text-left">
+              <h1 className="text-3xl md:text-4xl font-bold">
+                免费图片背景移除工具
+              </h1>
+              <p className="text-center sm:text-left mt-2 text-gray-600 dark:text-gray-300">
+                在线一键去除图片背景 • 100%免费 • 无水印
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              {/* 额度显示 */}
+              <div className="text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded-lg">
+                今日剩余：<span className="font-semibold text-blue-600 dark:text-blue-400">{Math.max(0, dailyUsage.limit - dailyUsage.used)}</span> / {dailyUsage.limit} 张
+                {!session?.user && (
+                  <span className="ml-2 text-xs text-gray-500">
+                    (<a href="#" onClick={(e) => { e.preventDefault(); document.getElementById('login-btn')?.click(); }} className="text-blue-600 hover:underline">登录</a>升级到{DAILY_LIMIT_LOGGED_IN}张)
+                  </span>
+                )}
+              </div>
+              <LoginButton />
+            </div>
+          </div>
         </div>
       </header>
 
