@@ -1,0 +1,9 @@
+name = "image-background-remover"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# D1数据库绑定
+[[d1_databases]]
+binding = "DB"
+database_name = "image-bg-db"
+database_id = "f45f168f-43a9-42c8-b5ab-eb9e319629da"
