@@ -4,13 +4,13 @@ import Google from "next-auth/providers/google"
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.AUTH_GOOGLE_ID!,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET!,
     }),
   ],
   session: { 
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30天
+    maxAge: 30 * 24 * 60 * 60,
   },
   trustHost: true,
   callbacks: {
