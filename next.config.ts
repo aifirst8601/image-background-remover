@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
+import fs from 'fs';
+import path from 'path';
 
 const nextConfig: NextConfig = {
-  // Cloudflare Pages 使用标准 Next.js 部署，不需要 output: export
   images: {
     remotePatterns: [
       {
@@ -12,6 +13,14 @@ const nextConfig: NextConfig = {
   },
   eslint: {
     ignoreDuringBuilds: true,
+  },
+  // 构建后删除 cache 目录，减小输出大小
+  postbuild: async () => {
+    const cacheDir = path.join(process.cwd(), '.next', 'cache');
+    if (fs.existsSync(cacheDir)) {
+      fs.rmSync(cacheDir, { recursive: true, force: true });
+      console.log('Deleted .next/cache directory to reduce output size');
+    }
   },
 };
 
