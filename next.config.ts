@@ -1,6 +1,4 @@
 import type { NextConfig } from "next";
-import fs from 'fs';
-import path from 'path';
 
 const nextConfig: NextConfig = {
   images: {
@@ -14,13 +12,12 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // 构建后删除 cache 目录，减小输出大小
-  postbuild: async () => {
-    const cacheDir = path.join(process.cwd(), '.next', 'cache');
-    if (fs.existsSync(cacheDir)) {
-      fs.rmSync(cacheDir, { recursive: true, force: true });
-      console.log('Deleted .next/cache directory to reduce output size');
+  // 禁用 webpack 缓存生成，避免大的 cache 文件
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.cache = false;
     }
+    return config;
   },
 };
 
