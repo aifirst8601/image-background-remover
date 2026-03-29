@@ -8,11 +8,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientSecret: process.env.AUTH_GOOGLE_SECRET!,
     }),
   ],
+  // 信任所有主机，允许动态检测URL
+  trustHost: true,
   session: { 
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60,
   },
-  trustHost: true,
   callbacks: {
     async redirect({ url, baseUrl }) {
       if (url.startsWith("/")) return `${baseUrl}${url}`
