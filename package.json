@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "npx next build",
-    "cf:build": "npx next build && pnpm pages:build",
+    "cf:build": "npx next build && npx @cloudflare/next-on-pages && cp -r .vercel/output/static/. .output/",
     "postbuild": "node -e \"const fs=require('fs');const p='.next/cache';if(fs.existsSync(p)){console.log('Deleting cache...');fs.rmSync(p,{recursive:true,force:true});console.log('Done');}\"",
     "pages:build": "npx @cloudflare/next-on-pages",
     "start": "next start",
